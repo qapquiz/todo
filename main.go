@@ -37,7 +37,7 @@ func main() {
 }
 
 type Message struct {
-	event       []Event
+	events      []Event
 	destination string
 }
 
