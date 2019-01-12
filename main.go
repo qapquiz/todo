@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -34,6 +36,15 @@ func main() {
 	log.Fatal(http.ListenAndServe(address, nil))
 }
 
+type Message struct {
+	event       []Event
+	destination string
+}
+
+type Event struct {
+	replyToken string
+}
+
 func Handler(w http.ResponseWriter, r *http.Request) {
 	_, err := linebot.New(CHANNEL_SECRET, CHANNEL_TOKEN)
 	if err != nil {
@@ -45,6 +56,22 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	fmt.Println(string(requestDump))
+
+	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	var message Message
+	err = json.Unmarshal(body, &message)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	fmt.Println(message)
 
 	// bot.ReplyMessage("", linebot.NewTextMessage("Hello").Do(); err != nil {
 
