@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -34,12 +35,16 @@ func main() {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	bot, err := linebot.New(CHANNEL_SECRET, CHANNEL_TOKEN)
+	_, err := linebot.New(CHANNEL_SECRET, CHANNEL_TOKEN)
 	if err != nil {
 		log.Fatal("Can't create bot")
 	}
 
-	fmt.Printf(r)
+	requestDump, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(requestDump))
 
 	// bot.ReplyMessage("", linebot.NewTextMessage("Hello").Do(); err != nil {
 
