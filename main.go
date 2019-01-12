@@ -6,9 +6,23 @@ import (
   "log"
 )
 
+func determineListenAddress() (string, error) {
+  port := os.Getenv("PORT")
+  if port == "" {
+    return "", fmt.Errorf("$PORT not set")
+  }
+  return ":" + port, nil
+}
+
 func main() {
   http.HandleFunc("/", Handler)
-  log.Fatal(http.ListenAndServe(":5000", nil))
+
+  address, err := determineListenAddress()
+  if err != nil{ 
+    log.Fatal("$PORT not set")
+  }
+
+  log.Fatal(http.ListenAndServe(address, nil))
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
